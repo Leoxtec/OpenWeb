@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Online LIDAR point cloud viewer</title>
+<link href="st.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="social-likes.css">
+
+	<script type="text/javascript">
+	    document.write("\<script src='//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js' type='text/javascript'>\<\/script>");
+	</script>
+
+
+<script src="social-likes.min.js"></script>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35216524-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/analytics.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</head>
+<body>
+<div id="container">
+		<div id ="spinner">Loading point cloud... <span id="percents_loaded">0%</span>
+			<div id="load_meter">
+				<span id = "load_meter_span" style="width: 25%"></span>
+			</div>
+	    </div>
+
+	    <div class="top1">
+			<span id="caption">Online LIDAR point cloud viewer</span><BR/>
+			<a title="fly over software" href="http://scenemark.com"><img border=0 src=banner720.png></a>
+			<BR/>
+		</div>
+
+	<div class="top2">
+<table border="0" width="100%" align="center" cellpadding="0" cellspacing="0">
+<tr>
+
+
+<td width="25%">
+	<div class="topcap">
+		Camera Free Look: Left Mouse Button<BR/>
+		Camera Move: [W A S D Q E] or hold Alt + Mouse<BR/>
+		Camera Forward/Backward/Roll: Right Mouse Button
+	</div>
+</td>
+<td width="25%">
+	<div class="topcap">
+		Model Rotate: hold Shift/Ctrl + Mouse<BR/>
+		Zoom: mouse wheel
+	</div>
+</td>
+</tr>
+</table>
+
+	</div>
+    <div class="top2">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+<td nowrap>
+<input type="file" id="files" name="file" />
+|
+Format:
+      <select id="format">
+        <option value="1" selected>LAS1.2</option>
+        <option value="2">X Y Z</option>
+      </select>
+|
+<button id="ReadHeader">Read Header</button>
+|
+Point buffer:
+      <select id="bufsize">
+        <option value="40000">40000</option>
+        <option value="100000" selected>100K</option>
+        <option value="500000">500K</option>
+        <option value="1000000">1M</option>
+        <option value="3000000">3M</option>
+        <option value="5000000">5M</option>
+        <option value="1000000">10M</option>
+      </select>
+|
+
+Animate
+<input type="checkbox" id="animation" name="animation" checked>
+|
+<button style="margin: 10px;" id="render">Render!</button>
+<!-- | <button style="margin: 10px;" id="Test">Test</button> -->
+</td>
+<td width="100%" align="center">
+<div id="progress_bar"><div class="percent">0%</div></div>
+</td>
+</tr>
+</table>
+    </div>
+
+
+<table width=100% style="vertical-align: top;">
+<tr>
+<td width=250; style="vertical-align: top; padding-right: 5px; min-width: 250px; width: 250px; text-align: right;">
+				<table id="HeaderTable" width="100%" align="center">
+				<tr>
+					<th width="50%">Property</th>
+					<th width="50%">Value</th>
+				</tr>
+				<tr><td>System ID</td><td>Sample system</td></tr>
+				<tr><td>Software ID</td><td>Test Software</td></tr>
+				<tr><td>Date</td><td>01.01.1970</td></tr>
+				<tr><td>Number of Points</td><td>987654321</td></tr>
+				<tr><td>Point Type</td><td>0</td></tr>
+				<tr><td>1st return</td><td>987653</td></tr>
+				<tr><td>2nd return</td><td>76543</td></tr>
+				<tr><td>3rd return</td><td>6542</td></tr>
+				<tr><td>4th return</td><td>421</td></tr>
+				<tr><td>5th return</td><td>32</td></tr>
+				<tr><td>Extent X</td><td>47723.1 : 47725.2</td></tr>
+				<tr><td>Extent Y</td><td>7365523 : 7365572</td></tr>
+				<tr><td>Extent Z</td><td>14 : 91</td></tr>
+				<tr><td>Number of VLRs</td><td>1</td></tr>
+				</table>
+	<BR/>
+        <div class="renderbox">
+	      <div style="position: absolute;">
+	      <select id="coloring1" >
+	        <option value="1">Intensity</option>
+	        <option value="2">Elevation</option>
+	        <option value="3">Classification</option>
+	        <option value="4">Intensity Color</option>
+	        <option value="5" selected>Elevation Color</option>
+	        <option value="6">RGB</option>
+	      </select>
+	      <select id="pointsize1">
+	        <option value="1">Point Size 1</option>
+	        <option value="2" selected>Point Size 2</option>
+	        <option value="3">Point Size 3</option>
+	        <option value="4">Point Size 4</option>
+	      </select>
+		</div>
+	      <canvas id="canvas1">
+			WebGL support is needed. Please try in Chrome or Firefox browser.
+	      </canvas>
+	</div>
+	<BR/>
+        <div class="renderbox">
+	      <div style="position: absolute;">
+	      <select id="coloring2">
+	        <option value="1">Intensity</option>
+	        <option value="2">Elevation</option>
+	        <option value="3">Classification</option>
+	        <option value="4">Intensity Color</option>
+	        <option value="5" selected>Elevation Color</option>
+	        <option value="6">RGB</option>
+	      </select>
+	      <select id="pointsize2">
+	        <option value="1">Point Size 1</option>
+	        <option value="2" selected>Point Size 2</option>
+	        <option value="3">Point Size 3</option>
+	        <option value="4">Point Size 4</option>
+	      </select>
+		</div>
+	      <canvas id="canvas2">
+			WebGL support is needed. Please try in Chrome or Firefox browser.
+	      </canvas>
+	</div>
+</td>
+<td width=100% style="vertical-align: top;">
+	      <div style="position: absolute;">
+	      <select id="coloring3">
+	        <option value="1">Intensity</option>
+	        <option value="2">Elevation</option>
+	        <option value="3">Classification</option>
+	        <option value="4">Intensity Color</option>
+	        <option value="5" selected>Elevation Color</option>
+	        <option value="6">RGB</option>
+	      </select>
+	      <select id="pointsize3">
+	        <option value="1">Point Size 1</option>
+	        <option value="2" selected>Point Size 2</option>
+	        <option value="3">Point Size 3</option>
+	        <option value="4">Point Size 4</option>
+	      </select>
+		</div>
+      <canvas id="canvas3">
+		WebGL support is needed. Please try in Chrome or Firefox browser.
+      </canvas>
+	  <BR><BR>
+
+	<div style="text-align: center; width:100%">
+		<table width="80%" align="center" border="0" cellspacing="6" style="background-color:#050505; margin-left:auto; margin-right:auto; width:60%">
+		<tr><td align=center colspan=2>L A T E S T &nbsp;&nbsp;&nbsp; N E W S</td></tr>
+		<tr align=left><td>April. 15, 2015</td><td>Fixed bug with loading hosted clouds. You can now load xyz or las files automatically using url parameter.</td></tr>
+		<tr align=left><td>March. 16, 2014</td><td>Free fly camera navigation added. Great for mobile and airborn point clouds.</td></tr>
+		<tr align=left><td>Feb 6, 2014</td><td>You can also use the viewer with your hosted point cloud. <BR/> For example: http://lidarview.com?url=http://your_server/your_file</td></tr>
+		<tr align=left><td>Feb 6, 2014</td><td>Added <a href=parameters.html>Frequently Asked Questions</a></td></tr>
+		</table>
+	</div>
+
+	  <BR><BR>
+
+<BR><BR>
+		</div>
+	</td>
+</tr>
+</table>
+
+
+
+<div class="footer">
+
+<table border="0" width="100%" align="center" cellpadding="0" cellspacing="0">
+<tr>
+	<td>
+		Copyright &copy; 2015 lidarview.com All rights reserved. Contact info&#64;xtsense.com
+	</td>
+</tr>
+</table>
+
+</div>
+
+<script type="text/javascript" src="sample.min.js"></script>
+<script type="text/javascript" src="all.min.js"></script>
+
+</div></body></html>
